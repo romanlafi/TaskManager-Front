@@ -1,51 +1,38 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import {createTask, deleteTask, fetchTasks, updateTask} from "../services/taskService.js";
+import TaskList from "../components/TaskList.jsx";
+import TaskForm from "../components/TaskForm.jsx";
 
 const Dashboard = () => {
     const [tasks, setTasks] = useState([]);
     const [newTaskTitle, setNewTaskTitle] = useState('');
     const [newTaskDescription, setNewTaskDescription] = useState('');
     const [errorMessage, setErrorMessage] = useState(null);
+    const [editingTaskId, setEditingTaskId] = useState(null);
+    const [editingTaskTitle, setEditingTaskTitle] = useState('');
+    const [editingTaskDescription, setEditingTaskDescription] = useState('');
     const [searchTerm, setSearchTerm] = useState('');
     const [orderBy, setOrderBy] = useState('created_at');
     const [skip, setSkip] = useState(0);
     const [limit, setLimit] = useState(10);
-    const [editingTaskId, setEditingTaskId] = useState(null);
-    const [editingTaskTitle, setEditingTaskTitle] = useState('');
-    const [editingTaskDescription, setEditingTaskDescription] = useState('');
     const navigate = useNavigate();
 
     useEffect(() => {
-        fetchTasks();
-    }, [navigate, orderBy, skip, limit]);
+        loadTasks();
+    }, [orderBy, skip, limit]);
 
-    const fetchTasks = async () => {
-        const token = localStorage.getItem('access_token');
-
-        if (!token) {
-            console.warn('No access token found. Redirecting to login.');
-            navigate('/');
-            return;
-        }
-
+    const loadTasks = async () => {
         try {
-            const url = `http://127.0.0.1:8000/tasks/?skip=${skip}&limit=${limit}&search=${searchTerm}&order_by=${orderBy}`;
-            const response = await fetch(url, {
-                method: 'GET',
-                headers: {
-                    'Authorization': `Bearer ${token}`,
-                },
-            });
+            const data = await fetchTasks(skip, limit, searchTerm, orderBy);
 
-            const data = await response.json();
-
-            if (response.ok) {
-                setTasks(data);
+            if (data.detail) {
+                setErrorMessage(data.detail);
             } else {
-                setErrorMessage(data.detail || 'Failed to retrieve tasks.');
+                setTasks(data);
             }
         } catch (error) {
-            setErrorMessage('Error connecting to the server.');
+            setErrorMessage('Failed to load tasks.');
             console.error(error);
         }
     };
@@ -57,57 +44,29 @@ const Dashboard = () => {
 
     const handleCreateTask = async (e) => {
         e.preventDefault();
-        const token = localStorage.getItem('access_token');
-
-        if (!newTaskTitle.trim()) {
-            setErrorMessage('Task title cannot be empty.');
-            return;
-        }
 
         try {
-            const response = await fetch('http://127.0.0.1:8000/tasks/', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${token}`,
-                },
-                body: JSON.stringify({ title: newTaskTitle, description: newTaskDescription }),
-            });
+            const newTask = await createTask(newTaskTitle, newTaskDescription);
 
-            const data = await response.json();
-
-            if (response.ok) {
-                setTasks(prevTasks => [...prevTasks, data]);
+            if (newTask.detail) {
+                setErrorMessage(newTask.detail);
+            } else {
+                setTasks(prevTasks => [...prevTasks, newTask]);
                 setNewTaskTitle('');
                 setNewTaskDescription('');
-            } else {
-                setErrorMessage(data.detail || 'Failed to create task.');
             }
         } catch (error) {
-            setErrorMessage('Error connecting to the server.');
+            setErrorMessage('Failed to create task.');
             console.error(error);
         }
     };
 
     const handleDeleteTask = async (taskId) => {
-        const token = localStorage.getItem('access_token');
-
         try {
-            const response = await fetch(`http://127.0.0.1:8000/tasks/${taskId}`, {
-                method: 'DELETE',
-                headers: {
-                    'Authorization': `Bearer ${token}`,
-                },
-            });
-
-            if (response.ok) {
-                setTasks(prevTasks => prevTasks.filter(task => task.id !== taskId));
-            } else {
-                const data = await response.json();
-                setErrorMessage(data.detail || 'Failed to delete task.');
-            }
+            await deleteTask(taskId);
+            setTasks(prevTasks => prevTasks.filter(task => task.id !== taskId));
         } catch (error) {
-            setErrorMessage('Error connecting to the server.');
+            setErrorMessage('Failed to delete task.');
             console.error(error);
         }
     };
@@ -120,46 +79,34 @@ const Dashboard = () => {
 
     const handleEditSubmit = async (e) => {
         e.preventDefault();
-        const token = localStorage.getItem('access_token');
-
-        if (!editingTaskTitle.trim()) {
-            setErrorMessage('Task title cannot be empty.');
-            return;
-        }
 
         try {
-            const response = await fetch(`http://127.0.0.1:8000/tasks/${editingTaskId}`, {
-                method: 'PUT',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${token}`,
-                },
-                body: JSON.stringify({ title: editingTaskTitle, description: editingTaskDescription }),
-            });
+            const updatedTask = await updateTask(editingTaskId, editingTaskTitle, editingTaskDescription);
 
-            const data = await response.json();
-
-            if (response.ok) {
+            if (updatedTask.detail) {
+                setErrorMessage(updatedTask.detail);
+            } else {
                 setTasks(prevTasks => prevTasks.map(task =>
                     task.id === editingTaskId ? { ...task, title: editingTaskTitle, description: editingTaskDescription } : task
                 ));
                 setEditingTaskId(null);
                 setEditingTaskTitle('');
                 setEditingTaskDescription('');
-            } else {
-                setErrorMessage(data.detail || 'Failed to update task.');
             }
         } catch (error) {
-            setErrorMessage('Error connecting to the server.');
+            setErrorMessage('Failed to update task.');
             console.error(error);
         }
     };
 
     const handleSearch = (e) => {
         e.preventDefault();
-        setSkip(0);
-        fetchTasks();
+        setSkip(0); // Reset paginación al hacer una nueva búsqueda
+        loadTasks();
     };
+
+    const handleNextPage = () => setSkip(prev => prev + limit);
+    const handlePreviousPage = () => setSkip(prev => Math.max(0, prev - limit));
 
     return (
         <div className="p-8">
@@ -171,62 +118,76 @@ const Dashboard = () => {
             {errorMessage && <p className="text-red-500 mb-4">{errorMessage}</p>}
 
             <form onSubmit={handleSearch} className="mb-4">
-                <input
-                    type="text"
-                    placeholder="Search tasks"
-                    value={searchTerm}
-                    onChange={(e) => setSearchTerm(e.target.value)}
-                    className="w-full p-2 mb-2 rounded bg-accent1 text-light"
-                />
+                <div className="flex gap-2 mb-2">
+                    <input
+                        type="text"
+                        placeholder="Search tasks"
+                        value={searchTerm}
+                        onChange={(e) => setSearchTerm(e.target.value)}
+                        className="w-full p-2 rounded bg-accent1 text-light"
+                    />
+                    <select
+                        value={orderBy}
+                        onChange={(e) => setOrderBy(e.target.value)}
+                        className="p-2 rounded bg-accent1 text-light"
+                    >
+                        <option value="created_at">Created Date</option>
+                        <option value="title">Title</option>
+                    </select>
+                    <button type="submit" className="p-2 bg-accent2 text-light rounded">Search</button>
+                </div>
+                <div className="flex gap-2 mb-2">
+                    <label className="text-light">Limit:</label>
+                    <input
+                        type="number"
+                        value={limit}
+                        onChange={(e) => {
+                            const value = Math.max(0, Number(e.target.value));
+                            setLimit(value);
+                        }}
+                        className="w-16 p-2 rounded bg-accent1 text-light"
+                    />
+                </div>
             </form>
 
-            <form onSubmit={handleCreateTask} className="mb-4">
-                <input
-                    type="text"
-                    placeholder="Task Title"
-                    value={newTaskTitle}
-                    onChange={(e) => setNewTaskTitle(e.target.value)}
-                    className="w-full p-2 mb-2 rounded bg-accent1 text-light"
+            {editingTaskId ? (
+                <TaskForm
+                    handleSubmit={handleEditSubmit}
+                    title={editingTaskTitle}
+                    setTitle={setEditingTaskTitle}
+                    description={editingTaskDescription}
+                    setDescription={setEditingTaskDescription}
+                    buttonText="Update Task"
                 />
-                <textarea
-                    placeholder="Task Description"
-                    value={newTaskDescription}
-                    onChange={(e) => setNewTaskDescription(e.target.value)}
-                    className="w-full p-2 mb-2 rounded bg-accent1 text-light"
+            ) : (
+                <TaskForm
+                    handleSubmit={handleCreateTask}
+                    title={newTaskTitle}
+                    setTitle={setNewTaskTitle}
+                    description={newTaskDescription}
+                    setDescription={setNewTaskDescription}
+                    buttonText="Add Task"
                 />
-                <button type="submit" className="w-full p-2 bg-accent2 text-light rounded">Add Task</button>
-            </form>
+            )}
 
-            <ul className="space-y-2">
-                {tasks.map((task) => (
-                    <li key={task.id} className="p-3 bg-accent1 text-light rounded flex justify-between items-center">
-                        {editingTaskId === task.id ? (
-                            <form onSubmit={handleEditSubmit} className="flex flex-col w-full">
-                                <input
-                                    type="text"
-                                    value={editingTaskTitle}
-                                    onChange={(e) => setEditingTaskTitle(e.target.value)}
-                                    className="w-full p-2 mb-2 rounded bg-accent2 text-light"
-                                />
-                                <textarea
-                                    value={editingTaskDescription}
-                                    onChange={(e) => setEditingTaskDescription(e.target.value)}
-                                    className="w-full p-2 mb-2 rounded bg-accent2 text-light"
-                                />
-                                <button type="submit" className="ml-2 text-green-500">Save</button>
-                            </form>
-                        ) : (
-                            <>
-                                <div onClick={() => handleEditTask(task)}>
-                                    <strong>{task.title}</strong>
-                                    <p>{task.description}</p>
-                                </div>
-                                <button onClick={() => handleDeleteTask(task.id)} className="text-red-500 ml-2">Delete</button>
-                            </>
-                        )}
-                    </li>
-                ))}
-            </ul>
+            <TaskList tasks={tasks} handleEdit={handleEditTask} handleDelete={handleDeleteTask} />
+
+            <div className="flex justify-between mt-4">
+                <button
+                    onClick={handlePreviousPage}
+                    disabled={skip === 0}
+                    className="p-2 bg-accent2 text-light rounded"
+                >
+                    Previous Page
+                </button>
+                <button
+                    onClick={handleNextPage}
+                    disabled={tasks.length < limit}
+                    className="p-2 bg-accent2 text-light rounded"
+                >
+                    Next Page
+                </button>
+            </div>
         </div>
     );
 };

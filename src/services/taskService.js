@@ -1,3 +1,5 @@
+import {HTTP_METHODS} from "../config/api.js";
+
 const BASE_URL = "http://127.0.0.1:8000/tasks/";
 
 const getToken = () => localStorage.getItem("access_token");
@@ -7,7 +9,7 @@ export const fetchTasks = async (skip, limit, search, orderBy) => {
     const url = `${BASE_URL}?skip=${skip}&limit=${limit}&search=${search}&order_by=${orderBy}`;
 
     const response = await fetch(url, {
-        method: 'GET',
+        method: HTTP_METHODS.GET,
         headers: {
             'Authorization': `Bearer ${token}`,
         }
@@ -20,7 +22,7 @@ export const createTask = async (title, description) => {
     const token = getToken();
 
     const response = await fetch(BASE_URL, {
-        method: 'POST',
+        method: HTTP_METHODS.POST,
         headers: {
             'Content-Type': 'application/json',
             'Authorization': `Bearer ${token}`
@@ -35,7 +37,7 @@ export const deleteTask = async (taskId) => {
     const token = getToken();
 
     await fetch(`${BASE_URL}${taskId}`, {
-        method: 'DELETE',
+        method: HTTP_METHODS.DELETE,
         headers: { 'Authorization': `Bearer ${token}` }
     });
 };
@@ -44,7 +46,7 @@ export const updateTask = async (taskId, title, description) => {
     const token = getToken();
 
     const response = await fetch(`${BASE_URL}${taskId}`, {
-        method: 'PUT',
+        method: HTTP_METHODS.PUT,
         headers: {
             'Content-Type': 'application/json',
             'Authorization': `Bearer ${token}`
