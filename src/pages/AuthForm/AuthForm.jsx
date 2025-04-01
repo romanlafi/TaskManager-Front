@@ -1,0 +1,113 @@
+import React, { useState } from 'react';
+import {useNavigate} from "react-router-dom";
+import {loginUser, registerUser} from "../../services/authService.js";
+import Button from "../../components/ui/Button/Button.jsx";
+import Toast from "../../components/ui/Toast.jsx";
+import {Input} from "../../components/ui/Input/Input.jsx";
+import {HTTP_STATUS} from "../../config/api.js";
+
+import styles from './AuthForm.module.css';
+
+const AuthForm = () => {
+    const [isLogin, setIsLogin] = useState(true);
+    const [username, setUsername] = useState('');
+    const [password, setPassword] = useState('');
+    const [toastMessage, setToastMessage] = useState(null);
+    const [toastType, setToastType] = useState('success');
+    const navigate = useNavigate();
+
+    const toggleForm = () => {
+        setIsLogin(!isLogin);
+    };
+
+    const resetForm = () => {
+        setIsLogin(true);
+        setUsername('');
+        setPassword('');
+    };
+
+    const showToast = (message, type) => {
+        setToastMessage(message);
+        setToastType(type);
+    };
+
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+
+        try {
+            const action = isLogin ? loginUser : registerUser;
+            const { status, data } = await action(username, password);
+
+            const handlers = {
+                [HTTP_STATUS.SUCCESS]: () => {
+                    if (isLogin) {
+                        localStorage.setItem('access_token', data.access_token);
+                        showToast('Login successful!', 'success');
+                        navigate('/dashboard');
+                    } else {
+                        showToast('Registration complete. You can now log in.', 'success');
+                        resetForm();
+                    }
+                },
+                [HTTP_STATUS.CREATED]: () => {
+                    showToast('Registration complete. You can now log in.', 'success');
+                    resetForm();
+                },
+                [HTTP_STATUS.BAD_REQUEST]: () => showToast(data.detail || 'Invalid credentials.', 'error'),
+                [HTTP_STATUS.UNAUTHORIZED]: () => showToast(data.detail || 'Invalid credentials.', 'error'),
+                [HTTP_STATUS.NOT_FOUND]: () => showToast(data.detail || 'User not found.', 'error'),
+                [HTTP_STATUS.CONFLICT]: () => showToast('Username already exists', 'error'),
+                default: () => showToast('Unexpected error. Please try again.', 'error'),
+            };
+
+            (handlers[status] || handlers.default)();
+        } catch (err) {
+            console.error(err);
+            showToast('Server connection error. Please try again.', 'error');
+        }
+    };
+
+
+    return (
+        <div className={styles.wrapper}>
+            <div className={styles.card}>
+                <h3 className={styles.title}>
+                    {isLogin ? 'Welcome back' : 'Create your account'}
+                </h3>
+
+                {toastMessage && (
+                    <Toast
+                        message={toastMessage}
+                        type={toastType}
+                        onClose={() => setToastMessage(null)}
+                    />
+                )}
+
+                <form onSubmit={handleSubmit} className={styles.form}>
+                    <Input
+                        placeholder="Username"
+                        value={username}
+                        onChange={(e) => setUsername(e.target.value)}
+                    />
+                    <Input
+                        type="password"
+                        placeholder="Password"
+                        value={password}
+                        onChange={(e) => setPassword(e.target.value)}
+                    />
+                    <Button type="submit">
+                        {isLogin ? 'Log In' : 'Register'}
+                    </Button>
+                </form>
+
+                <p className={styles.toggle} onClick={toggleForm}>
+                    {isLogin
+                        ? "Don't have an account? Register here."
+                        : 'Already have an account? Log in here.'}
+                </p>
+            </div>
+        </div>
+    );
+};
+
+export default AuthForm;

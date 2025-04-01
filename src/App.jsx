@@ -1,5 +1,5 @@
 import './App.css'
-import AuthForm from './pages/AuthForm.jsx';
+import AuthForm from './pages/AuthForm/AuthForm.jsx';
 import Dashboard from "./pages/Dashboard.jsx";
 import { Navigate, Route, BrowserRouter as Router, Routes } from "react-router-dom";
 import React from "react";

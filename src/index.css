@@ -1,22 +1,66 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+/*Color*/
+:root {
+    --color-bg: #1b1a19;
+    --color-surface: #2a2927;
+    --color-accent: #8d745b;
+    --color-text: #f5f5f5;
+    --color-border: #3a3734;
+}
 
-/* Estilos Globales con tu paleta */
+
+/* Global */
 body {
-    background-color: #080705; /* primary */
-    color: #FFFFFA;            /* light */
-    font-family: Arial, sans-serif;
+    font-family: 'Urbanist', sans-serif;
+    background-color: #1b1a19;
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    color: #1b1a19;
 }
 
-button {
-    transition: background-color 0.3s, transform 0.2s;
+/* Animations */
+@keyframes fade-in {
+    0% {
+        opacity: 0;
+        transform: scale(0.95);
+    }
+    100% {
+        opacity: 1;
+        transform: scale(1);
+    }
 }
 
-button:hover {
-    transform: scale(1.02);
+@keyframes fade-in-out {
+    0% {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    10%, 90% {
+        opacity: 1;
+        transform: translateY(0);
+    }
+    100% {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
 }
 
-input:focus {
-    outline: 2px solid #912F40; /* accent2 */
+.animate-fade-in {
+    animation: fade-in 0.4s ease-out both;
+}
+
+.animate-fade-in-out {
+    animation: fade-in-out 3s ease-in-out forwards;
+}
+
+/* Scrollbar */
+::-webkit-scrollbar {
+    width: 6px;
+}
+::-webkit-scrollbar-thumb {
+    background: rgba(0, 0, 0, 0.2);
+    border-radius: 3px;
+}
+::-webkit-scrollbar-track {
+    background: transparent;
 }

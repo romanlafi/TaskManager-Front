@@ -1,0 +1,18 @@
+/* src/components/ui/Button.module.css */
+.button {
+    width: 100%;
+    padding: 12px 16px;
+    background-color: #8d745b;
+    color: #f5f5f5;
+    font-weight: 600;
+    font-size: 16px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background-color 0.2s ease, transform 0.2s ease;
+}
+
+.button:hover {
+    background-color: rgba(141, 116, 91, 0.74);
+    transform: scale(1.02);
+}
