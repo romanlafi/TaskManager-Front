@@ -2,8 +2,8 @@
 .button {
     width: 100%;
     padding: 12px 16px;
-    background-color: #8d745b;
-    color: #f5f5f5;
+    background-color: var(--color-accent);
+    color: var(--color-text);
     font-weight: 600;
     font-size: 16px;
     border: none;

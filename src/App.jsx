@@ -2,7 +2,8 @@ import './App.css'
 import AuthForm from './pages/AuthForm/AuthForm.jsx';
 import Dashboard from "./pages/Dashboard.jsx";
 import { Navigate, Route, BrowserRouter as Router, Routes } from "react-router-dom";
-import React from "react";
+import React, {useState} from "react";
+import Toast from "./components/ui/Toast/Toast.jsx";
 
 const PrivateRoute = ({ children }) => {
     const token = localStorage.getItem('access_token');
@@ -10,10 +11,20 @@ const PrivateRoute = ({ children }) => {
 };
 
 function App() {
+    const [toastMessage, setToastMessage] = useState('');
+    const [toastType, setToastType] = useState('success');
+
     return (
         <Router>
             <Routes>
-                <Route path="/" element={<AuthForm />} />
+                <Route
+                    path="/"
+                    element={
+                        <AuthForm
+                        setToastMessage={setToastMessage}
+                        setToastType={setToastType}/>
+                    }
+                />
                 <Route
                     path="/dashboard"
                     element={
@@ -23,6 +34,13 @@ function App() {
                     }
                 />
             </Routes>
+            {toastMessage && (
+                <Toast
+                    message={toastMessage}
+                    type={toastType}
+                    onClose={() => setToastMessage('')}
+                />
+            )}
         </Router>
     );
 }

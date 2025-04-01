@@ -2,18 +2,15 @@ import React, { useState } from 'react';
 import {useNavigate} from "react-router-dom";
 import {loginUser, registerUser} from "../../services/authService.js";
 import Button from "../../components/ui/Button/Button.jsx";
-import Toast from "../../components/ui/Toast.jsx";
 import {Input} from "../../components/ui/Input/Input.jsx";
 import {HTTP_STATUS} from "../../config/api.js";
 
 import styles from './AuthForm.module.css';
 
-const AuthForm = () => {
+const AuthForm = ({ setToastMessage, setToastType }) => {
     const [isLogin, setIsLogin] = useState(true);
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
-    const [toastMessage, setToastMessage] = useState(null);
-    const [toastType, setToastType] = useState('success');
     const navigate = useNavigate();
 
     const toggleForm = () => {
@@ -74,14 +71,6 @@ const AuthForm = () => {
                 <h3 className={styles.title}>
                     {isLogin ? 'Welcome back' : 'Create your account'}
                 </h3>
-
-                {toastMessage && (
-                    <Toast
-                        message={toastMessage}
-                        type={toastType}
-                        onClose={() => setToastMessage(null)}
-                    />
-                )}
 
                 <form onSubmit={handleSubmit} className={styles.form}>
                     <Input
