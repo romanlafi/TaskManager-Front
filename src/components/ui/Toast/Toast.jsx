@@ -13,7 +13,6 @@ const Toast = ({ message, type = 'success', onClose }) => {
         <div className={`${styles.toast} ${styles[type]}`}>
             <div className={styles.content}>
                 <span>{message}</span>
-                {/*<button onClick={onClose} className={styles.close}>×</button>*/}
             </div>
         </div>
     );

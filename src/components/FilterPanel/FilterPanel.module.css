@@ -17,3 +17,12 @@ select, input {
     background-color: #2e2d2b;
     color: var(--color-text);
 }
+
+.buttonGroup {
+    display: flex;
+    gap: 0.5rem;
+    justify-content: space-between;
+    margin-top: 1rem;
+}
+
+

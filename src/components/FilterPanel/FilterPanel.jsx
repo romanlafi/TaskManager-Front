@@ -1,5 +1,6 @@
 import styles from './FilterPanel.module.css';
 import Button from "../ui/Button/Button.jsx";
+import CalendarInput from "../ui/CalendarInput/CalendarInput.jsx";
 
 const FilterPanel = ({
                          orderBy,
@@ -11,7 +12,8 @@ const FilterPanel = ({
                          beforeDeadline,
                          setBeforeDeadline,
                          applyFilters,
-                         resetFilters
+                         resetFilters,
+                         onCreate
                      }) => {
     return (
         <div className={styles.panel}>
@@ -31,12 +33,11 @@ const FilterPanel = ({
                 <option value="">All</option>
                 <option value="pending">Pending</option>
                 <option value="in_progress">In Progress</option>
-                <option value="completed">Completed</option>
+                <option value="done">Completed</option>
             </select>
 
-            <label>Before deadline</label>
-            <input
-                type="date"
+            <CalendarInput
+                label="Before deadline"
                 value={beforeDeadline}
                 onChange={(e) => setBeforeDeadline(e.target.value)}
             />
@@ -49,13 +50,20 @@ const FilterPanel = ({
                 <option value={50}>50</option>
             </select>
 
-            <Button onClick={applyFilters}>
-                Apply filters
+            <div className={styles.buttonGroup}>
+                <Button variant="outline" onClick={resetFilters}>
+                    Reset
+                </Button>
+                <Button onClick={applyFilters}>
+                    Apply
+                </Button>
+            </div>
+
+
+            <Button onClick={onCreate}>
+                Add Task
             </Button>
 
-            <Button variant="outline" onClick={resetFilters}>
-                Reset filters
-            </Button>
         </div>
     );
 };

@@ -4,9 +4,19 @@ const BASE_URL = "http://127.0.0.1:8000/tasks/";
 
 const getToken = () => localStorage.getItem("access_token");
 
-export const fetchTasks = async (skip, limit, search, orderBy) => {
+export const fetchTasks = async (skip, limit, search, orderBy, status, beforeDeadline) => {
     const token = getToken();
-    const url = `${API_ENDPOINTS.TASKS}?skip=${skip}&limit=${limit}&search=${search}&order_by=${orderBy}`;
+
+    const params = new URLSearchParams({
+        skip,
+        limit,
+        search,
+        order_by: orderBy,
+    });
+    if (status) params.append('status', status);
+    if (beforeDeadline) params.append('before_deadline', beforeDeadline);
+
+    const url = `${API_ENDPOINTS.TASKS}?${params.toString()}`;
 
     const response = await fetch(url, {
         method: HTTP_METHODS.GET,
@@ -19,16 +29,16 @@ export const fetchTasks = async (skip, limit, search, orderBy) => {
     return { status: response.status, data };
 };
 
-export const createTask = async (title, description) => {
+export const createTask = async (title, description, deadline) => {
     const token = getToken();
 
-    const response = await fetch(BASE_URL, {
+    const response = await fetch(API_ENDPOINTS.TASKS, {
         method: HTTP_METHODS.POST,
         headers: {
             'Content-Type': 'application/json',
             'Authorization': `Bearer ${token}`
         },
-        body: JSON.stringify({ title, description })
+        body: JSON.stringify({ title, description, deadline })
     });
 
     return await response.json();
@@ -43,7 +53,7 @@ export const deleteTask = async (taskId) => {
     });
 };
 
-export const updateTask = async (taskId, title, description) => {
+export const updateTask = async (taskId, title, description, status, deadline) => {
     const token = getToken();
 
     const response = await fetch(`${BASE_URL}${taskId}`, {
@@ -52,7 +62,7 @@ export const updateTask = async (taskId, title, description) => {
             'Content-Type': 'application/json',
             'Authorization': `Bearer ${token}`
         },
-        body: JSON.stringify({ title, description })
+        body: JSON.stringify({ title, description, status, deadline })
     });
 
     return await response.json();
