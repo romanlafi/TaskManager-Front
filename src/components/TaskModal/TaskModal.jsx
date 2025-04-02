@@ -7,11 +7,14 @@ const TaskModal = ({ isOpen, onClose, onSave, initialData = {} }) => {
     const [title, setTitle] = useState('');
     const [description, setDescription] = useState('');
     const [deadline, setDeadline] = useState('');
+    const [status, setStatus] = useState('pending');
 
     useEffect(() => {
         if (initialData) {
             setTitle(initialData.title || '');
             setDescription(initialData.description || '');
+            setStatus(initialData.status || 'pending');
+
             if (initialData.deadline) {
                 const formattedDate = new Date(initialData.deadline).toISOString().split('T')[0];
                 setDeadline(formattedDate);
@@ -23,7 +26,7 @@ const TaskModal = ({ isOpen, onClose, onSave, initialData = {} }) => {
 
     const handleSubmit = (e) => {
         e.preventDefault();
-        onSave({ title, description, deadline });
+        onSave({ title, description, deadline, status });
     };
 
     if (!isOpen) return null;
@@ -51,6 +54,21 @@ const TaskModal = ({ isOpen, onClose, onSave, initialData = {} }) => {
                         onChange={(e) => setDeadline(e.target.value)}
                         placeholder="Deadline"
                     />
+
+                    {initialData?.id && (
+                        <>
+                            <label>Status</label>
+                            <select
+                                value={status}
+                                onChange={(e) => setStatus(e.target.value)}
+                            >
+                                <option value="pending">Pending</option>
+                                <option value="in_progress">In Progress</option>
+                                <option value="done">Completed</option>
+                            </select>
+                        </>
+                    )}
+
                     <div className={styles.actions}>
                         <Button variant="outline" type="button" onClick={onClose}>Cancel</Button>
                         <Button type="submit">Save</Button>

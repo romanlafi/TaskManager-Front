@@ -8,6 +8,7 @@
     flex-direction: column;
     gap: 0.5rem;
     transition: transform 0.2s ease;
+    position: relative;
 }
 
 .card:hover {
@@ -49,7 +50,8 @@
 
 .meta {
     display: flex;
-    justify-content: space-between;
+    gap: 1rem;
+    justify-content: flex-start;
     font-size: 0.8rem;
     opacity: 0.8;
     margin-top: 0.5rem;
@@ -64,8 +66,8 @@
 
 .iconActions {
     position: absolute;
-    bottom: 0.75rem;
-    right: 0.75rem;
+    bottom: 1rem;
+    right: 1rem;
     display: flex;
     flex-direction: column;
     gap: 0.4rem;

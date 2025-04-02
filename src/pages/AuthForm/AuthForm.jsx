@@ -6,6 +6,7 @@ import {Input} from "../../components/ui/Input/Input.jsx";
 import {HTTP_STATUS} from "../../config/api.js";
 
 import styles from './AuthForm.module.css';
+import {MESSAGES} from "../../config/messages.js";
 
 const AuthForm = ({ setToastMessage, setToastType }) => {
     const [isLogin, setIsLogin] = useState(true);
@@ -39,15 +40,15 @@ const AuthForm = ({ setToastMessage, setToastType }) => {
                 [HTTP_STATUS.SUCCESS]: () => {
                     if (isLogin) {
                         localStorage.setItem('access_token', data.access_token);
-                        showToast('Login successful!', 'success');
+                        showToast(MESSAGES.LOGIN_SUCCESS, 'success');
                         navigate('/dashboard');
                     } else {
-                        showToast('Registration complete. You can now log in.', 'success');
+                        showToast(MESSAGES.REGISTER_SUCCESS, 'success');
                         resetForm();
                     }
                 },
                 [HTTP_STATUS.CREATED]: () => {
-                    showToast('Registration complete. You can now log in.', 'success');
+                    showToast(MESSAGES.REGISTER_SUCCESS, 'success');
                     resetForm();
                 },
                 [HTTP_STATUS.BAD_REQUEST]: () => showToast(data.detail || 'Invalid credentials.', 'error'),

@@ -17,7 +17,7 @@ const FilterPanel = ({
                      }) => {
     return (
         <div className={styles.panel}>
-            <h3>Filters</h3>
+            <h2>Filters</h2>
 
             <label>Order by</label>
             <select value={orderBy} onChange={(e) => setOrderBy(e.target.value)}>

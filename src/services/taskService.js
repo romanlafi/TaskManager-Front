@@ -44,6 +44,7 @@ export const createTask = async (title, description, deadline) => {
     return await response.json();
 };
 
+//ToDo: Adjust url to use the api.js constant
 export const deleteTask = async (taskId) => {
     const token = getToken();
 

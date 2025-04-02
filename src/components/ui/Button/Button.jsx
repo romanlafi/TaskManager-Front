@@ -1,9 +1,15 @@
 import styles from './Button.module.css';
 
-const Button = ({ children, className = '', variant = '', ...props }) => {
-    const variantClass = variant ? styles[variant] : '';
+const Button = ({ children, className = '', variant = 'default', ...props }) => {
+    const baseClass = styles.button;
+
+    const variantClasses = variant
+        .split(' ')
+        .map((v) => styles[v] || '')
+        .join(' ');
+
     return (
-        <button className={`${styles.button} ${variantClass} ${className}`} {...props}>
+        <button className={`${baseClass} ${variantClasses} ${className}`} {...props}>
             {children}
         </button>
     );

@@ -1,5 +1,7 @@
 import styles from './TaskCard.module.css';
 import Button from "../ui/Button/Button.jsx";
+import editIcon from '../../assets/icons/edit.svg';
+import deleteIcon from '../../assets/icons/delete.svg';
 
 const TaskCard = ({ title, description, status, deadline, created_at, onEdit, onDelete }) => {
     const formatDate = (dateStr) => {
@@ -31,15 +33,23 @@ const TaskCard = ({ title, description, status, deadline, created_at, onEdit, on
             </div>
 
             {(onEdit || onDelete) && (
-                <div className={styles.actions}>
+                <div className={styles.iconActions}>
                     {onEdit && (
-                        <Button onClick={onEdit}>
-                            Edit
+                        <Button
+                            variant="icon"
+                            onClick={onEdit}
+                            title="Edit Task"
+                        >
+                            <img src={editIcon} alt="Edit" />
                         </Button>
                     )}
                     {onDelete && (
-                        <Button variant="outline" onClick={onDelete}>
-                            Delete
+                        <Button
+                            variant="icon danger"
+                            onClick={onDelete}
+                            title="Delete Task"
+                        >
+                            <img src={deleteIcon} alt="Delete" />
                         </Button>
                     )}
                 </div>
