@@ -1,4 +1,4 @@
-import {HTTP_METHODS} from "../config/api.js";
+import {API_ENDPOINTS, HTTP_METHODS} from "../config/api.js";
 
 const BASE_URL = "http://127.0.0.1:8000/tasks/";
 
@@ -6,7 +6,7 @@ const getToken = () => localStorage.getItem("access_token");
 
 export const fetchTasks = async (skip, limit, search, orderBy) => {
     const token = getToken();
-    const url = `${BASE_URL}?skip=${skip}&limit=${limit}&search=${search}&order_by=${orderBy}`;
+    const url = `${API_ENDPOINTS.TASKS}?skip=${skip}&limit=${limit}&search=${search}&order_by=${orderBy}`;
 
     const response = await fetch(url, {
         method: HTTP_METHODS.GET,
@@ -15,7 +15,8 @@ export const fetchTasks = async (skip, limit, search, orderBy) => {
         }
     });
 
-    return await response.json();
+    const data = await response.json();
+    return { status: response.status, data };
 };
 
 export const createTask = async (title, description) => {
