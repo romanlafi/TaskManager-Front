@@ -51,17 +51,17 @@ const AuthForm = ({ setToastMessage, setToastType }) => {
                     showToast(MESSAGES.REGISTER_SUCCESS, 'success');
                     resetForm();
                 },
-                [HTTP_STATUS.BAD_REQUEST]: () => showToast(data.detail || 'Invalid credentials.', 'error'),
-                [HTTP_STATUS.UNAUTHORIZED]: () => showToast(data.detail || 'Invalid credentials.', 'error'),
+                [HTTP_STATUS.BAD_REQUEST]: () => showToast(data.detail || MESSAGES.LOGIN_ERROR, 'error'),
+                [HTTP_STATUS.UNAUTHORIZED]: () => showToast(data.detail || MESSAGES.LOGIN_ERROR, 'error'),
                 [HTTP_STATUS.NOT_FOUND]: () => showToast(data.detail || 'User not found.', 'error'),
-                [HTTP_STATUS.CONFLICT]: () => showToast('Username already exists', 'error'),
-                default: () => showToast('Unexpected error. Please try again.', 'error'),
+                [HTTP_STATUS.CONFLICT]: () => showToast(MESSAGES.REGISTER_CONFLICT, 'error'),
+                default: () => showToast(MESSAGES.UNEXPECTED_ERROR, 'error')
             };
 
             (handlers[status] || handlers.default)();
         } catch (err) {
             console.error(err);
-            showToast('Server connection error. Please try again.', 'error');
+            showToast(MESSAGES.SERVER_ERROR, 'error');
         }
     };
 

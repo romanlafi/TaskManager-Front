@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import styles from './TaskModal.module.css';
 import Button from '../ui/Button/Button';
 import CalendarInput from '../ui/CalendarInput/CalendarInput';
+import SelectInput from "../ui/SelectInput/SelectInput.jsx";
 
 const TaskModal = ({ isOpen, onClose, onSave, initialData = {} }) => {
     const [title, setTitle] = useState('');
@@ -56,17 +57,16 @@ const TaskModal = ({ isOpen, onClose, onSave, initialData = {} }) => {
                     />
 
                     {initialData?.id && (
-                        <>
-                            <label>Status</label>
-                            <select
-                                value={status}
-                                onChange={(e) => setStatus(e.target.value)}
-                            >
-                                <option value="pending">Pending</option>
-                                <option value="in_progress">In Progress</option>
-                                <option value="done">Completed</option>
-                            </select>
-                        </>
+                        <SelectInput
+                            label="Status"
+                            value={status}
+                            onChange={(e) => setStatus(e.target.value)}
+                            options={[
+                                { value: 'pending', label: 'Pending' },
+                                { value: 'in_progress', label: 'In Progress' },
+                                { value: 'done', label: 'Completed' },
+                            ]}
+                        />
                     )}
 
                     <div className={styles.actions}>

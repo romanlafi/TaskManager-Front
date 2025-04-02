@@ -29,7 +29,10 @@ function App() {
                     path="/dashboard"
                     element={
                         <PrivateRoute>
-                            <Dashboard />
+                            <Dashboard
+                                setToastMessage={setToastMessage}
+                                setToastType={setToastType}
+                            />
                         </PrivateRoute>
                     }
                 />

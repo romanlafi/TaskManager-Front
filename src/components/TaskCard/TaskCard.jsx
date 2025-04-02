@@ -13,7 +13,7 @@ const TaskCard = ({ title, description, status, deadline, created_at, onEdit, on
         switch (status) {
             case 'pending': return 'Pending';
             case 'in_progress': return 'In Progress';
-            case 'done': return 'done';
+            case 'done': return 'Completed';
             default: return 'Unknown';
         }
     };
@@ -34,15 +34,6 @@ const TaskCard = ({ title, description, status, deadline, created_at, onEdit, on
 
             {(onEdit || onDelete) && (
                 <div className={styles.iconActions}>
-                    {onEdit && (
-                        <Button
-                            variant="icon"
-                            onClick={onEdit}
-                            title="Edit Task"
-                        >
-                            <img src={editIcon} alt="Edit" />
-                        </Button>
-                    )}
                     {onDelete && (
                         <Button
                             variant="icon danger"
@@ -50,6 +41,15 @@ const TaskCard = ({ title, description, status, deadline, created_at, onEdit, on
                             title="Delete Task"
                         >
                             <img src={deleteIcon} alt="Delete" />
+                        </Button>
+                    )}
+                    {onEdit && (
+                        <Button
+                            variant="icon"
+                            onClick={onEdit}
+                            title="Edit Task"
+                        >
+                            <img src={editIcon} alt="Edit" />
                         </Button>
                     )}
                 </div>

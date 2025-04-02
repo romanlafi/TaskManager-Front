@@ -1,6 +1,7 @@
 import styles from './FilterPanel.module.css';
 import Button from "../ui/Button/Button.jsx";
 import CalendarInput from "../ui/CalendarInput/CalendarInput.jsx";
+import SelectInput from "../ui/SelectInput/SelectInput.jsx";
 
 const FilterPanel = ({
                          orderBy,
@@ -19,22 +20,29 @@ const FilterPanel = ({
         <div className={styles.panel}>
             <h2>Filters</h2>
 
-            <label>Order by</label>
-            <select value={orderBy} onChange={(e) => setOrderBy(e.target.value)}>
-                <option value="created_at">Created at</option>
-                <option value="title">Title</option>
-                <option value="description">Description</option>
-                <option value="status">Status</option>
-                <option value="deadline">Deadline</option>
-            </select>
+            <SelectInput
+                label="Order by"
+                value={orderBy}
+                onChange={(e) => setOrderBy(e.target.value)}
+                options={[
+                    { value: 'created_at', label: 'Created at' },
+                    { value: 'title', label: 'Title' },
+                    { value: 'status', label: 'Status' },
+                    { value: 'deadline', label: 'Deadline' },
+                ]}
+            />
 
-            <label>Status</label>
-            <select value={status} onChange={(e) => setStatus(e.target.value)}>
-                <option value="">All</option>
-                <option value="pending">Pending</option>
-                <option value="in_progress">In Progress</option>
-                <option value="done">Completed</option>
-            </select>
+            <SelectInput
+                label="Status"
+                value={status}
+                onChange={(e) => setStatus(e.target.value)}
+                options={[
+                    { value: '', label: 'All' },
+                    { value: 'pending', label: 'Pending' },
+                    { value: 'in_progress', label: 'In Progress' },
+                    { value: 'done', label: 'Completed' },
+                ]}
+            />
 
             <CalendarInput
                 label="Before deadline"
@@ -42,13 +50,17 @@ const FilterPanel = ({
                 onChange={(e) => setBeforeDeadline(e.target.value)}
             />
 
-            <label>Limit</label>
-            <select value={limit} onChange={(e) => setLimit(Number(e.target.value))}>
-                <option value={5}>5</option>
-                <option value={10}>10</option>
-                <option value={25}>25</option>
-                <option value={50}>50</option>
-            </select>
+            <SelectInput
+                label="Limit"
+                value={limit}
+                onChange={(e) => setLimit(e.target.value)}
+                options={[
+                    { value: 5, label: '5' },
+                    { value: 10, label: '10' },
+                    { value: 25, label: '25' },
+                    { value: 50, label: '50' },
+                ]}
+            />
 
             <div className={styles.buttonGroup}>
                 <Button variant="outline" onClick={resetFilters}>

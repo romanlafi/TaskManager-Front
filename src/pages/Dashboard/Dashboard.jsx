@@ -5,18 +5,20 @@ import TaskCard from "../../components/TaskCard/TaskCard.jsx";
 import FilterPanel from "../../components/FilterPanel/FilterPanel.jsx";
 import { HTTP_STATUS } from "../../config/api.js";
 import TaskModal from "../../components/TaskModal/TaskModal.jsx";
+import {MESSAGES} from "../../config/messages.js";
+import ConfirmModal from "../../components/ConfirmModal/ConfirmModal.jsx";
+import warningIcon from "../../assets/icons/warning.svg";
 
-const Dashboard = () => {
+
+const Dashboard = ({setToastMessage, setToastType}) => {
     const [tasks, setTasks] = useState([]);
     const [search, setSearch] = useState('');
 
-    // Filtros reales
     const [orderBy, setOrderBy] = useState('created_at');
     const [status, setStatus] = useState('');
     const [beforeDeadline, setBeforeDeadline] = useState('');
     const [limit, setLimit] = useState(10);
 
-    // Filtros temporales
     const [tempOrderBy, setTempOrderBy] = useState(orderBy);
     const [tempStatus, setTempStatus] = useState(status);
     const [tempBeforeDeadline, setTempBeforeDeadline] = useState(beforeDeadline);
@@ -29,8 +31,9 @@ const Dashboard = () => {
     const [showModal, setShowModal] = useState(false);
     const [editingTask, setEditingTask] = useState(null);
 
-    const [toastMessage, setToastMessage] = useState('');
-    const [toastType, setToastType] = useState('success');
+    const [showConfirm, setShowConfirm] = useState(false);
+    const [taskToDelete, setTaskToDelete] = useState(null);
+
 
     const loadTasks = async () => {
         setLoading(true);
@@ -45,7 +48,7 @@ const Dashboard = () => {
             }
         } catch (error) {
             console.error(error);
-            setError('Server error');
+            showToast(MESSAGES.SERVER_ERROR, 'error');
         } finally {
             setLoading(false);
         }
@@ -55,27 +58,32 @@ const Dashboard = () => {
         try {
             if (editingTask) {
                 await updateTask(editingTask.id, data.title, data.description, data.status, data.deadline);
+                showToast(MESSAGES.TASK_UPDATED, 'success');
             } else {
                 await createTask(data.title, data.description, data.deadline);
+                showToast(MESSAGES.TASK_CREATED, 'success');
             }
             await loadTasks();
             closeModal();
         } catch (err) {
+            showToast(MESSAGES.SERVER_ERROR, 'error');
             console.error('Error saving task:', err);
         }
     };
 
     const handleDeleteTask = async (id) => {
-        const confirmDelete = window.confirm('Are you sure you want to delete this task?');
-        if (!confirmDelete) return;
+        if (!taskToDelete) return;
 
         try {
             await deleteTask(id);
-            showToast('Task deleted successfully', 'success');
+            showToast(MESSAGES.TASK_DELETED, 'success');
             await loadTasks();
         } catch (error) {
             console.error(error);
-            showToast('Error deleting task', 'error');
+            showToast(MESSAGES.UNEXPECTED_ERROR, 'error');
+        } finally {
+            setShowConfirm(false);
+            setTaskToDelete(null);
         }
     };
 
@@ -159,11 +167,27 @@ const Dashboard = () => {
                             key={task.id}
                             {...task}
                             onEdit={() => openEditModal(task)}
-                            onDelete={() => handleDeleteTask(task.id)}
+                            onDelete={() => {
+                                setTaskToDelete(task.id);
+                                setShowConfirm(true);
+                            }}
                         />
                     ))}
                 </section>
             </main>
+            <ConfirmModal
+                isOpen={showConfirm}
+                title="Delete Task"
+                message="Are you sure you want to delete this task?"
+                confirmText="Delete"
+                cancelText="Cancel"
+                onConfirm={() => handleDeleteTask(taskToDelete)}
+                onCancel={() => {
+                    setShowConfirm(false);
+                    setTaskToDelete(null);
+                }}
+                icon={<img src={warningIcon} alt="Warning"/>}
+            />
 
             <TaskModal
                 isOpen={showModal}

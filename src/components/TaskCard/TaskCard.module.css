@@ -37,10 +37,12 @@
 
 .in_progress .status {
     background-color: #42a5f5;
+    color: #1f1f1f;
 }
 
-.completed .status {
+.done .status {
     background-color: #66bb6a;
+    color: #1f1f1f;
 }
 
 .description {

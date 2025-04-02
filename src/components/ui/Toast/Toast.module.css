@@ -1,3 +1,25 @@
+@keyframes fadeIn {
+    0% {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    100% {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes fadeOut {
+    0% {
+        opacity: 1;
+        transform: translateY(0);
+    }
+    100% {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+}
+
 .toast {
     position: fixed;
     bottom: 1.5rem;
@@ -9,7 +31,6 @@
     color: var(--color-text);
     font-size: 0.9rem;
     font-weight: 500;
-    animation: fade-in-out 3s ease-in-out forwards;
     max-width: 300px;
     width: fit-content;
     min-height: 42px;
@@ -23,23 +44,19 @@
     transition: transform 0.2s ease;
 }
 
+.toast.show {
+    animation: fadeIn 0.4s ease forwards;
+}
+
+.toast.hide {
+    animation: fadeOut 0.4s ease forwards;
+}
+
 .toast:hover {
     transform: scale(1.02);
 }
 
-.success {
-    background-color: #4caf50;
-}
-
-.error {
-    background-color: #e53935;
-}
-
-.info {
-    background-color: #2196f3;
-}
-
-.warning {
-    background-color: #ffb300;
-    color: #1f1f1f;
-}
+.success { background-color: #4caf50; }
+.error { background-color: #e53935; }
+.info { background-color: #2196f3; }
+.warning { background-color: #ffb300; color: #1f1f1f; }
