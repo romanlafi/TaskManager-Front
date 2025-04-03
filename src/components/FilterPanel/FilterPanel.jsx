@@ -14,7 +14,8 @@ const FilterPanel = ({
                          setBeforeDeadline,
                          applyFilters,
                          resetFilters,
-                         onCreate
+                         onCreate,
+                         onLogout,
                      }) => {
     return (
         <div className={styles.panel}>
@@ -25,10 +26,10 @@ const FilterPanel = ({
                 value={orderBy}
                 onChange={(e) => setOrderBy(e.target.value)}
                 options={[
-                    { value: 'created_at', label: 'Created at' },
-                    { value: 'title', label: 'Title' },
-                    { value: 'status', label: 'Status' },
-                    { value: 'deadline', label: 'Deadline' },
+                    {value: 'created_at', label: 'Created at'},
+                    {value: 'title', label: 'Title'},
+                    {value: 'status', label: 'Status'},
+                    {value: 'deadline', label: 'Deadline'},
                 ]}
             />
 
@@ -37,10 +38,10 @@ const FilterPanel = ({
                 value={status}
                 onChange={(e) => setStatus(e.target.value)}
                 options={[
-                    { value: '', label: 'All' },
-                    { value: 'pending', label: 'Pending' },
-                    { value: 'in_progress', label: 'In Progress' },
-                    { value: 'done', label: 'Completed' },
+                    {value: '', label: 'All'},
+                    {value: 'pending', label: 'Pending'},
+                    {value: 'in_progress', label: 'In Progress'},
+                    {value: 'done', label: 'Completed'},
                 ]}
             />
 
@@ -55,10 +56,10 @@ const FilterPanel = ({
                 value={limit}
                 onChange={(e) => setLimit(e.target.value)}
                 options={[
-                    { value: 5, label: '5' },
-                    { value: 10, label: '10' },
-                    { value: 25, label: '25' },
-                    { value: 50, label: '50' },
+                    {value: 5, label: '5'},
+                    {value: 10, label: '10'},
+                    {value: 25, label: '25'},
+                    {value: 50, label: '50'},
                 ]}
             />
 
@@ -71,11 +72,13 @@ const FilterPanel = ({
                 </Button>
             </div>
 
-
             <Button onClick={onCreate}>
                 Add Task
             </Button>
 
+            <Button onClick={onLogout}>
+                Log out
+            </Button>
         </div>
     );
 };

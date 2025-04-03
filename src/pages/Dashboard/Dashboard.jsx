@@ -8,12 +8,13 @@ import TaskModal from "../../components/TaskModal/TaskModal.jsx";
 import {MESSAGES} from "../../config/messages.js";
 import ConfirmModal from "../../components/ConfirmModal/ConfirmModal.jsx";
 import warningIcon from "../../assets/icons/warning.svg";
+import {useNavigate} from "react-router-dom";
 
 
 const Dashboard = ({setToastMessage, setToastType}) => {
     const [tasks, setTasks] = useState([]);
-    const [search, setSearch] = useState('');
 
+    const [search, setSearch] = useState('');
     const [orderBy, setOrderBy] = useState('created_at');
     const [status, setStatus] = useState('');
     const [beforeDeadline, setBeforeDeadline] = useState('');
@@ -34,6 +35,9 @@ const Dashboard = ({setToastMessage, setToastType}) => {
     const [showConfirm, setShowConfirm] = useState(false);
     const [taskToDelete, setTaskToDelete] = useState(null);
 
+    const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
+    const navigate = useNavigate();
+
 
     const loadTasks = async () => {
         setLoading(true);
@@ -41,6 +45,10 @@ const Dashboard = ({setToastMessage, setToastType}) => {
 
         try {
             const { status: responseStatus, data } = await fetchTasks(skip, limit, search, orderBy, status, beforeDeadline);
+            if (responseStatus === HTTP_STATUS.UNAUTHORIZED) {
+                handleLogout();
+                showToast(MESSAGES.SESSION_EXPIRED_ERROR);
+            }
             if (responseStatus === HTTP_STATUS.SUCCESS) {
                 setTasks(data);
             } else {
@@ -85,6 +93,12 @@ const Dashboard = ({setToastMessage, setToastType}) => {
             setShowConfirm(false);
             setTaskToDelete(null);
         }
+    };
+
+    const handleLogout = () => {
+        localStorage.removeItem('access_token');
+        navigate('/');
+        showToast(MESSAGES.SESSION_ENDED, 'success');
     };
 
     const showToast = (message, type) => {
@@ -143,6 +157,7 @@ const Dashboard = ({setToastMessage, setToastType}) => {
                         setSkip(0);
                     }}
                     onCreate={openCreateModal}
+                    onLogout={() => setShowLogoutConfirm(true)}
                 />
             </aside>
 
@@ -175,6 +190,7 @@ const Dashboard = ({setToastMessage, setToastType}) => {
                     ))}
                 </section>
             </main>
+
             <ConfirmModal
                 isOpen={showConfirm}
                 title="Delete Task"
@@ -187,6 +203,17 @@ const Dashboard = ({setToastMessage, setToastType}) => {
                     setTaskToDelete(null);
                 }}
                 icon={<img src={warningIcon} alt="Warning"/>}
+            />
+
+            <ConfirmModal
+                isOpen={showLogoutConfirm}
+                title="Logout"
+                message="Are you sure you want to log out?"
+                confirmText="Log out"
+                cancelText="Cancel"
+                confirmVariant="danger"
+                onConfirm={handleLogout}
+                onCancel={() => setShowLogoutConfirm(false)}
             />
 
             <TaskModal
