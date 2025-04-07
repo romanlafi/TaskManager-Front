@@ -1,14 +1,14 @@
-import React, { useEffect, useState } from 'react';
 import styles from './Dashboard.module.css';
+import React, { useEffect, useState } from 'react';
+import {useNavigate} from "react-router-dom";
 import {createTask, deleteTask, fetchTasks, updateTask} from "../../services/taskService.js";
 import TaskCard from "../../components/TaskCard/TaskCard.jsx";
 import FilterPanel from "../../components/FilterPanel/FilterPanel.jsx";
-import { HTTP_STATUS } from "../../config/api.js";
 import TaskModal from "../../components/TaskModal/TaskModal.jsx";
-import {MESSAGES} from "../../config/messages.js";
 import ConfirmModal from "../../components/ConfirmModal/ConfirmModal.jsx";
+import { HTTP_STATUS } from "../../config/api.js";
+import {MESSAGES} from "../../config/messages.js";
 import warningIcon from "../../assets/icons/warning.svg";
-import {useNavigate} from "react-router-dom";
 
 
 const Dashboard = ({setToastMessage, setToastType}) => {
@@ -37,7 +37,6 @@ const Dashboard = ({setToastMessage, setToastType}) => {
 
     const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
     const navigate = useNavigate();
-
 
     const loadTasks = async () => {
         setLoading(true);

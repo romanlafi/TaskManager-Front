@@ -11,19 +11,26 @@ const TaskModal = ({ isOpen, onClose, onSave, initialData = {} }) => {
     const [status, setStatus] = useState('pending');
 
     useEffect(() => {
-        if (initialData) {
-            setTitle(initialData.title || '');
-            setDescription(initialData.description || '');
-            setStatus(initialData.status || 'pending');
+        if (isOpen) {
+            if (initialData) {
+                setTitle(initialData.title || '');
+                setDescription(initialData.description || '');
+                setStatus(initialData.status || 'pending');
 
-            if (initialData.deadline) {
-                const formattedDate = new Date(initialData.deadline).toISOString().split('T')[0];
-                setDeadline(formattedDate);
-            } else {
-                setDeadline('');
+                if (initialData.deadline) {
+                    const formattedDate = new Date(initialData.deadline).toISOString().split('T')[0];
+                    setDeadline(formattedDate);
+                } else {
+                    setDeadline('');
+                }
             }
+        } else {
+            setTitle('');
+            setDescription('');
+            setDeadline('');
+            setStatus('pending');
         }
-    }, [initialData]);
+    }, [isOpen, initialData]);
 
     const handleSubmit = (e) => {
         e.preventDefault();

@@ -1,7 +1,5 @@
 import {API_ENDPOINTS, HTTP_METHODS} from "../config/api.js";
 
-const BASE_URL = "http://127.0.0.1:8000/tasks/";
-
 const getToken = () => localStorage.getItem("access_token");
 
 export const fetchTasks = async (skip, limit, search, orderBy, status, beforeDeadline) => {
@@ -44,11 +42,10 @@ export const createTask = async (title, description, deadline) => {
     return await response.json();
 };
 
-//ToDo: Adjust url to use the api.js constant
 export const deleteTask = async (taskId) => {
     const token = getToken();
 
-    await fetch(`${BASE_URL}${taskId}`, {
+    await fetch(`${API_ENDPOINTS.TASKS}${taskId}`, {
         method: HTTP_METHODS.DELETE,
         headers: { 'Authorization': `Bearer ${token}` }
     });
@@ -57,7 +54,7 @@ export const deleteTask = async (taskId) => {
 export const updateTask = async (taskId, title, description, status, deadline) => {
     const token = getToken();
 
-    const response = await fetch(`${BASE_URL}${taskId}`, {
+    const response = await fetch(`${API_ENDPOINTS.TASKS}${taskId}`, {
         method: HTTP_METHODS.PUT,
         headers: {
             'Content-Type': 'application/json',
